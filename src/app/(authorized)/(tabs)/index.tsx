@@ -5,6 +5,7 @@ import PageHeader from '@/src/components/header';
 import Loading from '@/src/components/loadingscreen/loading';
 import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
+import 'expo-router/entry';
 import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuthSession } from '../../login/ctx';
@@ -30,7 +31,7 @@ export default function AcessarColetas() {
   }, []);
 
   async function ProcessarRetornoDaAPI() {
-    
+
     setLoadTela(true);
 
     let response = await api.get('/ColetaEcobox?_user=' + login);
@@ -38,7 +39,9 @@ export default function AcessarColetas() {
     setLoadTela(false);
 
     if (response.data === "999") {
-      router.replace('/../SemInternet');
+      router.push({
+        pathname: '/../SemInternet',
+      });
     }
 
     if (response === undefined)
@@ -50,7 +53,7 @@ export default function AcessarColetas() {
   }
   function CarregarDetalhes(id: number) {
     router.push({
-      pathname: '/../detalhecoleta',     
+      pathname: '/../detalhecoleta',
       params: { coleta: id },
     });
   }

@@ -8,6 +8,7 @@
     "scheme": "appecobox",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "entryPoint": "./src/app/(authorized)/(tabs)/index.tsx",
     "ios": {
       "supportsTablet": true
     },
@@ -16,7 +17,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.cleber.souza.AppEcobox"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "6883d8f4-8591-4780-af09-4f2b2843da7c"
+      }
     }
   }
 }

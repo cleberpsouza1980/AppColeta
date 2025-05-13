@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
       },
       textoBotao:{        
         textAlign:'left',        
-        fontSize:20,  
+        fontSize:18,  
         marginLeft:-25,               
         marginTop:-1, 
         marginRight:-50, 

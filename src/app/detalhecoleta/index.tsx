@@ -9,9 +9,10 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { useAuthSession } from "../login/ctx";
 
 export interface CaixasColeta {
-    idCaixa: number,
+    id: number,
     caixa: string,
-    temperaturaCaixa: string
+    temperatura: string,
+    qtd:number
 }
 
 let caixaImg = require('@/assets/caixa.png');
@@ -33,12 +34,14 @@ export default function DetalheColeta() {
     async function ProcessarRetornoDaAPI() {
         setLoadTela(true);
 
-        let response = await api.get('/ColetaEcobox/BuscarCaixasColeta?_numColeta=' + params.coleta);
+        let response = await api.get('/ColetaEcobox/BuscarCaixasColetaEcobox?_numColeta=' + params.coleta);
 
         setLoadTela(false);
 
         if (response.data === "999") {
-            router.replace('/../SemInternet');
+            router.push({
+                pathname: '/../SemInternet',
+            });
         }
 
         if (response === undefined)
@@ -52,7 +55,7 @@ export default function DetalheColeta() {
     function CarregarDetalhes(id: number) {
         router.push({
             pathname: '/../detalhecaixa',
-            params: { caixa: id },
+            params: { caixa: id,coleta:params.coleta },
         });
     }
     return (
@@ -64,14 +67,14 @@ export default function DetalheColeta() {
                     <View>
                         <PageHeader title={!login ? '' : login} hashandleGoBack={false} />
                         <View style={styles.container}>
-                            <Text style={styles.textMensagemPrincipal}>COLETAS</Text>
+                            <Text style={styles.textMensagemPrincipal}>COLETA: {params.coleta}</Text>
                         </View>
                         <ScrollView style={styles.textoScroll}>
                             <View>
                                 {
                                     caixas.map((p: CaixasColeta) => {
                                         return (
-                                            <View key={p.idCaixa}>
+                                            <View key={p.id}>
                                                 {ItensCaixaPromisse(p)}
                                             </View>
                                         )
@@ -88,16 +91,16 @@ export default function DetalheColeta() {
     function ItensCaixaPromisse(item: CaixasColeta) {
         return (
             <View>
-                <TouchableOpacity key={item.idCaixa} onPress={() => CarregarDetalhes(item.idCaixa)}>
+                <TouchableOpacity key={item.id} onPress={() => CarregarDetalhes(item.id)}>
                     <View key={item.caixa}>
                         <Image
-                            key={item.idCaixa}
-                            style={{ width: 40, height: 31, marginBottom: 20 }}
+                            key={item.id}
+                            style={{ width: 30, height: 30, marginBottom: 20 }}
                             source={caixaImg}>
-                        </Image><Text style={styles.nameTxt}>{item.idCaixa} </Text>
+                        </Image><Text style={styles.nameTxt}>{item.caixa}-{String(item.qtd).padStart(2, "0")} </Text>
                     </View>
                     <Text style={styles.mblTxt}>
-                        {item.temperaturaCaixa}
+                        {item.temperatura}
                     </Text>
                 </TouchableOpacity>
             </View>

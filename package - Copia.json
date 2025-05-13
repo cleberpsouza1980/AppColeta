@@ -6,6 +6,8 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
     "lint": "expo lint"
   },
   "dependencies": {
@@ -16,11 +18,10 @@
     "ajv": "^8.17.1",
     "ajv-keywords": "^5.1.0",
     "apisauce": "^3.1.1",
-    "axios": "^1.8.1",
+    "axios": "^1.9.0",
     "expo": "~53.0.7",
     "expo-blur": "~14.1.4",
     "expo-constants": "~17.1.5",
-    "expo-crypto": "^14.1.4",
     "expo-font": "~13.3.1",
     "expo-haptics": "~14.1.4",
     "expo-image": "~2.1.6",
@@ -33,7 +34,6 @@
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.1.6",
     "navigation": "^6.3.0",
-    "pod-install": "^0.3.9",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
@@ -44,22 +44,16 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
-    "react-native-web": "^0.20.0",
+    "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
-    "@babel/preset-react": "^7.27.1",
     "@types/react": "~19.0.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",
     "typescript": "~5.8.3"
   },
   "private": true,
-  "jest": {
-    "preset": "react-native",
-    "transformIgnorePatterns": [
-      "node_modules/(?!(jest-)?react-native|react-navigation)"
-    ]
-  }
+  "crypto-js": "git+https://github.com/brix/crypto-js.git#feature/react-native"
 }
