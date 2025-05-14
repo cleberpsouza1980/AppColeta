@@ -12,7 +12,7 @@ export interface CaixasColeta {
     id: number,
     caixa: string,
     temperatura: string,
-    qtd:number
+    qtd: number
 }
 
 let caixaImg = require('@/assets/caixa.png');
@@ -55,7 +55,7 @@ export default function DetalheColeta() {
     function CarregarDetalhes(id: number) {
         router.push({
             pathname: '/../detalhecaixa',
-            params: { caixa: id,coleta:params.coleta },
+            params: { caixa: id, coleta: params.coleta },
         });
     }
     return (

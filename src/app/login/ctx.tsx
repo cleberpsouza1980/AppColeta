@@ -44,7 +44,7 @@ export default function AuthProvider({ children }: { children: ReactNode }): Rea
     await AsyncStorage.setItem('@usu', user);
     tokenRef.current = token;
     loginRef.current = user;
-    router.replace('/')
+    router.replace('/');
   }, []);
 
   const signOut = useCallback(async () => {
