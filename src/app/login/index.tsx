@@ -6,14 +6,14 @@ import { ActivityIndicator, Alert, Button, Image, StyleSheet, Text, TextInput, V
 import { useAuthSession } from "./ctx";
 
 interface LoginResult {
-    token: string,
-    menus: Menu[],
+    Token: string,
+    Menus: Menu[],
 }
 
 export interface Menu {
-    codigo: string,
-    descricao: string,
-    versao: string,
+    Codigo: string,
+    Descricao: string,
+    Versao: string,
 }
 
 export default function Login(): ReactNode {
@@ -79,9 +79,8 @@ export default function Login(): ReactNode {
             // await AsyncStorage.setItem('@usu', usuario);
             // router.replace('/');
             //console.log(resp.token);
-            if (resp.token.length > 10) {
-                console.log("Achou o Singin");
-                login(String(resp.token));
+            if (resp.Token.length > 10) {
+                login(String(resp.Token));
             }
         }
     };

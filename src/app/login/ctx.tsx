@@ -39,7 +39,7 @@ export default function AuthProvider({ children }: { children: ReactNode }): Rea
   }, []);
 
   const signIn = useCallback(async (token: string, user: string) => {
-    console.log("Gravou token");
+    console.log("Gravou token" + token);
     await AsyncStorage.setItem('@token', token);
     await AsyncStorage.setItem('@usu', user);
     tokenRef.current = token;

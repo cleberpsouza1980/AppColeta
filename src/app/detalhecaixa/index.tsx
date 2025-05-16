@@ -9,27 +9,27 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, Vibration, View } from "react-native";
 import { CheckBox } from 'react-native-elements';
 import { useAuthSession } from "../login/ctx";
-import Critica, { resp } from "../types/types";
-
+import { resp } from "../types/types";
 
 
 export interface DetalheCaixasColeta {
-    modeloCaixa: string,
-    codigoEanCaixa: string,
-    situacaoCaixa: string,
-    descCaixa: string,
-    codigoCaixa: number,
-    logger: string,
-    serie: string,
-    qtd: number,
+    ModeloCaixa: string,
+    CodigoEanCaixa: string,
+    SituacaoCaixa: string,
+    DescCaixa: string,
+    CodigoCaixa: number,
+    Logger: string,
+    Serie: string,
+    Qtd: number,    
 }
 
 export interface CaixasConferidas {
-    seq: number,
-    serie: string,
-    modelo: string,
-    qtd: number,
-    user: string | null,
+    Seq: number,
+    Serie: string,
+    Modelo: string,
+    Qtd: number,
+    User: string | null,
+    NuCoordenacao: number,
 }
 
 const ONE_SECOND_IN_MS = 1000;
@@ -75,6 +75,14 @@ export default function DetalheCaixa() {
             });
             return;
         }
+
+        if (response.data === "401") {
+            router.push({
+                pathname: '/../login',
+            });
+            return;
+        }
+
         if (response === undefined)
             return;
 
@@ -82,15 +90,15 @@ export default function DetalheCaixa() {
         if (response.data != null && response.ok) {
             let cx = conversao<DetalheCaixasColeta[]>(response.data);
             setCaixas(cx);
-            setCaixaEco(cx[1].descCaixa);
-            setQtdCaixa(cx[1].qtd);
+            setCaixaEco(cx[1].DescCaixa);
+            setQtdCaixa(cx[1].Qtd);
             return;
         }
         else {
             //console.log(JSON.stringify(response.data));            
-            let msg2 = conversao<Critica>(response.data);
+            let msg2 = conversao<resp>(response.data);
             console.log(msg2);
-            Alert.alert("Atenção", String(msg2.menssage));
+            Alert.alert("Atenção", String(msg2.Menssage));
             //setMessagemError(String(msg.menssage));
             return;
         }
@@ -115,8 +123,8 @@ export default function DetalheCaixa() {
         }
 
         let IdxEqt = caixas.find(et => {
-            if (et.codigoEanCaixa === etiqueta)
-                return et.serie;
+            if (et.CodigoEanCaixa === etiqueta)
+                return et.Serie;
         });
 
         if (IdxEqt === undefined) {
@@ -132,8 +140,8 @@ export default function DetalheCaixa() {
         }
 
         let exSerie = caixasConferidas.findIndex(et => {
-            if (et.serie === IdxEqt.serie)
-                return et.serie;
+            if (et.Serie === IdxEqt.Serie)
+                return et.Serie;
         });
 
         if (exSerie > 0) {
@@ -163,18 +171,19 @@ export default function DetalheCaixa() {
     function GravarLista(caixa: DetalheCaixasColeta) {
         let ArrayCaixas = [...caixasConferidas];
 
-        console.log("serie " + caixa.serie);
+        console.log("serie " + caixa.Serie);
         console.log("ArrayCaixas Ltg " + ArrayCaixas.length);
         ArrayCaixas.push({
-            seq: ArrayCaixas.length + 1,
-            serie: caixa.serie,
-            modelo: caixa.descCaixa,
-            qtd: 1,
-            user: login,
+            Seq: ArrayCaixas.length + 1,
+            Serie: caixa.Serie,
+            Modelo: caixa.DescCaixa,
+            Qtd: 1,
+            User: login,
+            NuCoordenacao: Number(params.coleta)
         });
 
         setCaixasConferidas(ArrayCaixas);
-        console.log("ArrayCaixas " + ArrayCaixas.forEach(p => p.serie));
+        console.log("ArrayCaixas " + ArrayCaixas.forEach(p => p.Serie));
     }
 
     const Voltar = () => {
@@ -210,12 +219,17 @@ export default function DetalheCaixa() {
         setLoad(true);
         console.log(JSON.stringify(caixasConferidas));
 
-        const res = await api.post("/ColetaEcobox/GravarConferenciaCaixa", JSON.stringify(caixasConferidas));
+        const res = await api.post("/ColetaEcobox//GravarConferencia", JSON.stringify(caixasConferidas));
+
+        console.log(JSON.stringify(res.data));
 
         response = conversao<resp>(res.data);
 
-        Alert.alert("Conferência", response.message);
         setLoad(false);
+        Alert.alert("Conferência", response.Menssage);
+
+        if(response.Code === 1)        
+            router.replace('/');        
     }
 
     return (
@@ -274,10 +288,10 @@ export default function DetalheCaixa() {
                         </View>
                         <ScrollView style={styles.textoScroll}>
                             <View>
-                                {caixasConferidas.length > 0 ? (
+                                {caixasConferidas != null ? (
                                     caixasConferidas.map((x: CaixasConferidas) => {
                                         return (
-                                            <View key={x.seq}>
+                                            <View key={x.Seq}>
                                                 {ItensCaixasPromisse(x)}
                                             </View>
                                         )
@@ -301,15 +315,15 @@ export default function DetalheCaixa() {
         return (
             <View>
                 <View style={styles.rowGrid}>
-                    <Text>{item.seq}</Text>
-                    <Text>{item.serie}</Text>
-                    <Text>{item.modelo}</Text>
-                    <TouchableOpacity key={item.serie}>
+                    <Text>{item.Seq}</Text>
+                    <Text>{item.Serie}</Text>
+                    <Text>{item.Modelo}</Text>
+                    <TouchableOpacity key={item.Serie}>
                         <View>
                             <CheckBox style={styles.pic}
                                 checkedIcon="dot-trash-o"
                                 uncheckedIcon="trash-o"
-                                onPress={() => toggleChecked(item.serie)}
+                                onPress={() => toggleChecked(item.Serie)}
                             />
                         </View>
                     </TouchableOpacity>
@@ -320,7 +334,7 @@ export default function DetalheCaixa() {
 
     function toggleChecked(nota: string) {
         let arr = caixasConferidas.filter(function (item) {
-            return item.serie !== nota
+            return item.Serie !== nota
         })
         setTotalLido(arr.length);
         setCaixasConferidas(arr);

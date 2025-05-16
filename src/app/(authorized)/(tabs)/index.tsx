@@ -12,9 +12,9 @@ import { useAuthSession } from '../../login/ctx';
 
 
 export interface ColetasDia {
-  numColeta: number,
-  cliente: string,
-  data_Coleta: Date,
+  NumColeta: number,
+  Cliente: string,
+  Data_Coleta: Date,
 }
 
 export default function AcessarColetas() {
@@ -41,6 +41,12 @@ export default function AcessarColetas() {
     if (response.data === "999") {
       router.push({
         pathname: '/../SemInternet',
+      });
+    }
+
+    if (response.data === "401") {
+      router.push({
+        pathname: '/../login',
       });
     }
 
@@ -74,7 +80,7 @@ export default function AcessarColetas() {
                 {
                   coletaDia.map((p: ColetasDia) => {
                     return (
-                      <View key={p.numColeta}>
+                      <View key={p.NumColeta}>
                         {ItensColetaPromisse(p)}
                       </View>
                     )
@@ -91,16 +97,16 @@ export default function AcessarColetas() {
   function ItensColetaPromisse(item: ColetasDia) {
     return (
       <View>
-        <TouchableOpacity key={item.numColeta} onPress={() => CarregarDetalhes(item.numColeta)}>
-          <View key={item.numColeta}>
+        <TouchableOpacity key={item.NumColeta} onPress={() => CarregarDetalhes(item.NumColeta)}>
+          <View key={item.NumColeta}>
             <Image
-              key={item.numColeta}
+              key={item.NumColeta}
               style={{ width: 40, height: 31, marginBottom: 20 }}
               source={imgtruck}>
-            </Image><Text style={styles.nameTxt}>{item.numColeta} </Text>
+            </Image><Text style={styles.nameTxt}>{item.NumColeta} </Text>
           </View>
           <Text style={styles.mblTxt}>
-            {item.cliente + "  " + dataFormatada(item.data_Coleta)}
+            {item.Cliente + "  " + dataFormatada(item.Data_Coleta)}
           </Text>
         </TouchableOpacity>
       </View>

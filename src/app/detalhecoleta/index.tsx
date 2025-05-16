@@ -9,10 +9,10 @@ import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "rea
 import { useAuthSession } from "../login/ctx";
 
 export interface CaixasColeta {
-    id: number,
-    caixa: string,
-    temperatura: string,
-    qtd: number
+    Id: number,
+    Caixa: string,
+    Temperatura: string,
+    Qtd: number
 }
 
 let caixaImg = require('@/assets/caixa.png');
@@ -74,7 +74,7 @@ export default function DetalheColeta() {
                                 {
                                     caixas.map((p: CaixasColeta) => {
                                         return (
-                                            <View key={p.id}>
+                                            <View key={p.Id}>
                                                 {ItensCaixaPromisse(p)}
                                             </View>
                                         )
@@ -91,16 +91,16 @@ export default function DetalheColeta() {
     function ItensCaixaPromisse(item: CaixasColeta) {
         return (
             <View>
-                <TouchableOpacity key={item.id} onPress={() => CarregarDetalhes(item.id)}>
-                    <View key={item.caixa}>
+                <TouchableOpacity key={item.Id} onPress={() => CarregarDetalhes(item.Id)}>
+                    <View key={item.Caixa}>
                         <Image
-                            key={item.id}
+                            key={item.Id}
                             style={{ width: 30, height: 30, marginBottom: 20 }}
                             source={caixaImg}>
-                        </Image><Text style={styles.nameTxt}>{item.caixa}-{String(item.qtd).padStart(2, "0")} </Text>
+                        </Image><Text style={styles.nameTxt}>{item.Caixa}-{String(item.Qtd).padStart(2, "0")} </Text>
                     </View>
                     <Text style={styles.mblTxt}>
-                        {item.temperatura}
+                        {item.Temperatura}
                     </Text>
                 </TouchableOpacity>
             </View>

@@ -7,7 +7,7 @@ const api = create({
     //baseURL: 'https://www.luftlogistics.com:8801//APILuft//Api/',    
     baseURL: 'http://172.16.200.82//APILufthml//Api/',    
     headers: {
-        Accept: 'application/json',
+        Accept: 'application/json; charset=utf-8'
     },
     timeout: 30000,
 });
@@ -17,7 +17,6 @@ api.addAsyncRequestTransform(request => async () => {
     console.log('baseURL:' + api.getBaseURL() + request.url);
 
     if (token) {
-        request.headers['Content-Type'] = 'text/plain; charset=utf-8';
         request.headers['Authorization'] = `Bearer ${token}`;
     }
     else
