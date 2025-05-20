@@ -8,14 +8,16 @@ import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAuthSession } from "../login/ctx";
 
-export interface CaixasColeta {
-    Id: number,
-    Caixa: string,
-    Temperatura: string,
-    Qtd: number
+export interface CaixasColeta {  
+    id: number,
+    caixa: string,
+    temperatura: string,
+    qtd: number,
+    conferido: boolean,
 }
 
 let caixaImg = require('@/assets/caixa.png');
+let conferidoImg = require('@/assets/images/icons/check.png');
 
 export default function DetalheColeta() {
 
@@ -25,6 +27,7 @@ export default function DetalheColeta() {
     const isFocused = useIsFocused();
 
     const params = useLocalSearchParams<{ coleta: string }>();
+    let i = 0;
 
     useEffect(() => {
         if (isFocused)
@@ -52,10 +55,10 @@ export default function DetalheColeta() {
         }
     }
 
-    function CarregarDetalhes(id: number) {
+    function CarregarDetalhes(id: number, faixa: string) {
         router.push({
             pathname: '/../detalhecaixa',
-            params: { caixa: id, coleta: params.coleta },
+            params: { caixa: id, coleta: params.coleta, faixa: faixa },
         });
     }
     return (
@@ -74,8 +77,8 @@ export default function DetalheColeta() {
                                 {
                                     caixas.map((p: CaixasColeta) => {
                                         return (
-                                            <View key={p.Id}>
-                                                {ItensCaixaPromisse(p)}
+                                            <View key={i++}>
+                                                {ItensCaixaPromisse(p, i)}
                                             </View>
                                         )
                                     })
@@ -88,22 +91,29 @@ export default function DetalheColeta() {
     );
 
 
-    function ItensCaixaPromisse(item: CaixasColeta) {
+    function ItensCaixaPromisse(item: CaixasColeta, i: number) {
         return (
             <View>
-                <TouchableOpacity key={item.Id} onPress={() => CarregarDetalhes(item.Id)}>
-                    <View key={item.Caixa}>
+                <TouchableOpacity key={i} disabled={item.conferido} onPress={() => CarregarDetalhes(item.id, item.temperatura)}>
+                    <View key={item.caixa} style={{ flexDirection: 'row', marginBottom: 1 }}>
                         <Image
-                            key={item.Id}
-                            style={{ width: 30, height: 30, marginBottom: 20 }}
+                            key={i}
+                            style={{ width: 25, height: 25 }}
                             source={caixaImg}>
-                        </Image><Text style={styles.nameTxt}>{item.Caixa}-{String(item.Qtd).padStart(2, "0")} </Text>
+                        </Image>
+                        <Text style={styles.nameTxt}>{item.caixa}-{String(item.qtd).padStart(2, "0")} </Text>
+                        {(item.conferido &&
+                            <Image
+                                style={{ width: 20, height: 20, marginLeft: "15%" }}
+                                source={conferidoImg}>
+                            </Image>
+                        )}
                     </View>
                     <Text style={styles.mblTxt}>
-                        {item.Temperatura}
+                        {item.temperatura}
                     </Text>
                 </TouchableOpacity>
-            </View>
+            </View >
         )
     };
 }
@@ -138,7 +148,7 @@ const styles = StyleSheet.create({
         marginTop: -50,
     },
     nameTxt: {
-        marginTop: -60,
+        marginTop: -10,
         marginLeft: 40,
         fontWeight: '600',
         color: '#191970',
@@ -150,5 +160,6 @@ const styles = StyleSheet.create({
         color: '#D8BFD8',
         fontSize: 15,
         flexDirection: 'row',
+        marginBottom: 10,
     }
 });

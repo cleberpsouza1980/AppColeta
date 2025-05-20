@@ -13,23 +13,26 @@ import { resp } from "../types/types";
 
 
 export interface DetalheCaixasColeta {
-    ModeloCaixa: string,
-    CodigoEanCaixa: string,
-    SituacaoCaixa: string,
-    DescCaixa: string,
-    CodigoCaixa: number,
-    Logger: string,
-    Serie: string,
-    Qtd: number,    
+    modeloCaixa: string,
+    codigoEanCaixa: string,
+    situacaoCaixa: string,
+    descCaixa: string,
+    codigoCaixa: number,
+    logger: string,
+    serie: string,
+    qtd: number,
+    idColetaItens: number,
+    faixa: string,
 }
 
 export interface CaixasConferidas {
-    Seq: number,
-    Serie: string,
-    Modelo: string,
-    Qtd: number,
-    User: string | null,
-    NuCoordenacao: number,
+    seq: number,
+    serie: string,
+    modelo: string,
+    qtd: number,
+    user: string | null,
+    nuCoordenacao: number,
+    idColetaItens: number,
 }
 
 const ONE_SECOND_IN_MS = 1000;
@@ -55,7 +58,7 @@ export default function DetalheCaixa() {
     const isFocused = useIsFocused();
 
 
-    const params = useLocalSearchParams<{ caixa: string, coleta: string }>();
+    const params = useLocalSearchParams<{ caixa: string, coleta: string, faixa: string }>();
 
     useEffect(() => {
         if (isFocused)
@@ -90,15 +93,15 @@ export default function DetalheCaixa() {
         if (response.data != null && response.ok) {
             let cx = conversao<DetalheCaixasColeta[]>(response.data);
             setCaixas(cx);
-            setCaixaEco(cx[1].DescCaixa);
-            setQtdCaixa(cx[1].Qtd);
+            setCaixaEco(cx[1].descCaixa);
+            setQtdCaixa(cx[1].qtd);
             return;
         }
         else {
             //console.log(JSON.stringify(response.data));            
             let msg2 = conversao<resp>(response.data);
             console.log(msg2);
-            Alert.alert("Atenção", String(msg2.Menssage));
+            Alert.alert("Atenção", String(msg2.menssage));
             //setMessagemError(String(msg.menssage));
             return;
         }
@@ -123,8 +126,8 @@ export default function DetalheCaixa() {
         }
 
         let IdxEqt = caixas.find(et => {
-            if (et.CodigoEanCaixa === etiqueta)
-                return et.Serie;
+            if (et.codigoEanCaixa === etiqueta && et.faixa === params.faixa)
+                return et.serie;
         });
 
         if (IdxEqt === undefined) {
@@ -140,17 +143,18 @@ export default function DetalheCaixa() {
         }
 
         let exSerie = caixasConferidas.findIndex(et => {
-            if (et.Serie === IdxEqt.Serie)
-                return et.Serie;
+            if (et.serie === IdxEqt.serie)
+                return et.serie;
         });
 
-        if (exSerie > 0) {
+        console.log(exSerie);
+
+        if (exSerie >= 0) {
             LimparCampos();
             setMessagemError('Etiqueta já lida.');
             Vibration.vibrate(PATTERN);
             return;
         }
-
 
         VerificaTodosConferidos(IdxEqt);
     }
@@ -171,19 +175,18 @@ export default function DetalheCaixa() {
     function GravarLista(caixa: DetalheCaixasColeta) {
         let ArrayCaixas = [...caixasConferidas];
 
-        console.log("serie " + caixa.Serie);
-        console.log("ArrayCaixas Ltg " + ArrayCaixas.length);
         ArrayCaixas.push({
-            Seq: ArrayCaixas.length + 1,
-            Serie: caixa.Serie,
-            Modelo: caixa.DescCaixa,
-            Qtd: 1,
-            User: login,
-            NuCoordenacao: Number(params.coleta)
+            seq: ArrayCaixas.length + 1,
+            serie: caixa.serie,
+            modelo: caixa.descCaixa,
+            qtd: 1,
+            user: login,
+            nuCoordenacao: Number(params.coleta),
+            idColetaItens: caixa.idColetaItens
         });
 
         setCaixasConferidas(ArrayCaixas);
-        console.log("ArrayCaixas " + ArrayCaixas.forEach(p => p.Serie));
+        console.log("ArrayCaixas " + ArrayCaixas.forEach(p => p.serie));
     }
 
     const Voltar = () => {
@@ -226,10 +229,10 @@ export default function DetalheCaixa() {
         response = conversao<resp>(res.data);
 
         setLoad(false);
-        Alert.alert("Conferência", response.Menssage);
+        Alert.alert("Conferência", response.menssage);
 
-        if(response.Code === 1)        
-            router.replace('/');        
+        if (response.code === 1)
+            router.replace('/');
     }
 
     return (
@@ -284,20 +287,22 @@ export default function DetalheCaixa() {
                                 <Text>Modelo</Text>
                                 <Text>Excluir?</Text>
                             </View>
-                            : <View></View>
                         </View>
-                        <ScrollView style={styles.textoScroll}>
-                            <View>
-                                {caixasConferidas != null ? (
-                                    caixasConferidas.map((x: CaixasConferidas) => {
-                                        return (
-                                            <View key={x.Seq}>
-                                                {ItensCaixasPromisse(x)}
-                                            </View>
-                                        )
-                                    })) : null};
-                            </View>
-                        </ScrollView>
+                        {caixasConferidas.length > 0 ? (
+                            <ScrollView style={styles.textoScroll}>
+                                <View>
+                                    {
+                                        caixasConferidas.map((x: CaixasConferidas) => {
+                                            return (
+                                                <View key={x.seq}>
+                                                    {ItensCaixasPromisse(x)}
+                                                </View>
+                                            )
+                                        })
+                                    };
+                                </View>
+                            </ScrollView>
+                        ) : null}
                         <View style={styles.styleButton}>
                             <Button title="Voltar" color="black" onPress={Voltar} />
                             {load ? (
@@ -315,15 +320,15 @@ export default function DetalheCaixa() {
         return (
             <View>
                 <View style={styles.rowGrid}>
-                    <Text>{item.Seq}</Text>
-                    <Text>{item.Serie}</Text>
-                    <Text>{item.Modelo}</Text>
-                    <TouchableOpacity key={item.Serie}>
+                    <Text>{item.seq}</Text>
+                    <Text>{item.serie}</Text>
+                    <Text>{item.modelo}</Text>
+                    <TouchableOpacity key={item.serie}>
                         <View>
                             <CheckBox style={styles.pic}
                                 checkedIcon="dot-trash-o"
                                 uncheckedIcon="trash-o"
-                                onPress={() => toggleChecked(item.Serie)}
+                                onPress={() => toggleChecked(item.serie)}
                             />
                         </View>
                     </TouchableOpacity>
@@ -334,7 +339,7 @@ export default function DetalheCaixa() {
 
     function toggleChecked(nota: string) {
         let arr = caixasConferidas.filter(function (item) {
-            return item.Serie !== nota
+            return item.serie !== nota
         })
         setTotalLido(arr.length);
         setCaixasConferidas(arr);

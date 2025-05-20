@@ -3,7 +3,6 @@ import conversao from '@/res/services/conversao';
 import { dataFormatada } from '@/res/services/functions';
 import PageHeader from '@/src/components/header';
 import Loading from '@/src/components/loadingscreen/loading';
-import { useIsFocused } from '@react-navigation/native';
 import { router } from 'expo-router';
 import 'expo-router/entry';
 import { useEffect, useState } from 'react';
@@ -12,9 +11,9 @@ import { useAuthSession } from '../../login/ctx';
 
 
 export interface ColetasDia {
-  NumColeta: number,
-  Cliente: string,
-  Data_Coleta: Date,
+  numColeta: number,
+  cliente: string,
+  data_Coleta: Date,
 }
 
 export default function AcessarColetas() {
@@ -22,17 +21,17 @@ export default function AcessarColetas() {
   const [loadTela, setLoadTela] = useState(false);
   const [coletaDia, setColetaDia] = useState<ColetasDia[]>([]);
 
-  const isFocused = useIsFocused();
   let imgtruck = require('@/assets/images/caminhaoFinalizado.png');
+  let imgRefresh = require('@/assets/images/refresh.png');
 
   useEffect(() => {
-    if (isFocused)
-      ProcessarRetornoDaAPI();
+    ProcessarRetornoDaAPI();
   }, []);
 
   async function ProcessarRetornoDaAPI() {
 
     setLoadTela(true);
+    console.log("Lendo API");
 
     let response = await api.get('/ColetaEcobox?_user=' + login);
 
@@ -74,13 +73,19 @@ export default function AcessarColetas() {
             <PageHeader title={!login ? '' : login} hashandleGoBack={false} />
             <View style={styles.container}>
               <Text style={styles.textMensagemPrincipal}>COLETAS</Text>
+              <TouchableOpacity style={styles.btnRefresh} onPress={ProcessarRetornoDaAPI}>
+                <Image
+                  source={imgRefresh}
+                  style={{ width: 20, height: 20 }}
+                />
+              </TouchableOpacity>
             </View>
             <ScrollView style={styles.textoScroll}>
               <View>
                 {
                   coletaDia.map((p: ColetasDia) => {
                     return (
-                      <View key={p.NumColeta}>
+                      <View key={p.numColeta}>
                         {ItensColetaPromisse(p)}
                       </View>
                     )
@@ -97,16 +102,16 @@ export default function AcessarColetas() {
   function ItensColetaPromisse(item: ColetasDia) {
     return (
       <View>
-        <TouchableOpacity key={item.NumColeta} onPress={() => CarregarDetalhes(item.NumColeta)}>
-          <View key={item.NumColeta}>
+        <TouchableOpacity key={item.numColeta} onPress={() => CarregarDetalhes(item.numColeta)}>
+          <View key={item.numColeta}>
             <Image
-              key={item.NumColeta}
+              key={item.numColeta}
               style={{ width: 40, height: 31, marginBottom: 20 }}
               source={imgtruck}>
-            </Image><Text style={styles.nameTxt}>{item.NumColeta} </Text>
+            </Image><Text style={styles.nameTxt}>{item.numColeta} </Text>
           </View>
           <Text style={styles.mblTxt}>
-            {item.Cliente + "  " + dataFormatada(item.Data_Coleta)}
+            {item.cliente + "  " + dataFormatada(item.data_Coleta)}
           </Text>
         </TouchableOpacity>
       </View>
@@ -128,12 +133,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#e28f46',
     marginTop: -60,
     alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
     textAlign: 'center',
+    justifyContent: 'space-between',    
     fontSize: 20,
     color: '#fafafa',
     fontWeight: 'bold',
+    marginBottom:10,
+    flexDirection:'row',
   },
   textoScroll: {
     textAlign: 'center',
@@ -156,5 +162,10 @@ const styles = StyleSheet.create({
     color: '#D8BFD8',
     fontSize: 15,
     flexDirection: 'row',
-  }
+  },
+  btnRefresh: {
+    marginTop: -35,
+    marginLeft: '92%',    
+    flexDirection:'row',
+  },
 });

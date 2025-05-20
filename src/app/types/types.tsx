@@ -1,6 +1,6 @@
 
 export type resp =
 {
-    Code: number;
-    Menssage: string;    
+    code: number;
+    menssage: string;    
 }

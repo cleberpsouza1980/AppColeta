@@ -4,8 +4,7 @@ import { useAuthSession } from '../../login/ctx';
 
 
 export default function VincularColetas() {
-  const { login } = useAuthSession();
-  console.log("Entrou1");
+  const { login } = useAuthSession();  
   return (
     <View>
       <PageHeader title={!login ? '' : login} hashandleGoBack={false} />
