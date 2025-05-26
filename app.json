@@ -7,17 +7,23 @@
     "icon": "./assets/images/icon.png",
     "scheme": "appecobox",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "entryPoint": "./src/app/(authorized)/(tabs)/index.tsx",
+    "newArchEnabled": true,    
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
+      },    
       "package": "com.cleber.souza.AppEcobox"
     },
     "web": {
@@ -30,7 +36,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

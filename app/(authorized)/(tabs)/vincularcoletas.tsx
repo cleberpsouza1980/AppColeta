@@ -1,4 +1,4 @@
-import PageHeader from '@/src/components/header';
+import PageHeader from '@/components/header';
 import { StyleSheet, Text, View } from 'react-native';
 import { useAuthSession } from '../../login/ctx';
 

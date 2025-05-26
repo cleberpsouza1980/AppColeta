@@ -1,8 +1,8 @@
+import PageHeader from '@/components/header';
+import Loading from '@/components/loadingscreen/loading';
 import api from '@/res/services/api';
 import conversao from '@/res/services/conversao';
 import { dataFormatada } from '@/res/services/functions';
-import PageHeader from '@/src/components/header';
-import Loading from '@/src/components/loadingscreen/loading';
 import { router } from 'expo-router';
 import 'expo-router/entry';
 import { useEffect, useState } from 'react';

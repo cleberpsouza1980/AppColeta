@@ -1,14 +1,14 @@
+import PageHeader from '@/components/header';
+import Loading from "@/components/loadingscreen/loading";
 import api from "@/res/services/api";
 import conversao from "@/res/services/conversao";
-import PageHeader from "@/src/components/header";
-import Loading from "@/src/components/loadingscreen/loading";
 import { useIsFocused } from "@react-navigation/core";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAuthSession } from "../login/ctx";
 
-export interface CaixasColeta {  
+export interface CaixasColeta {
     id: number,
     caixa: string,
     temperatura: string,
@@ -55,12 +55,13 @@ export default function DetalheColeta() {
         }
     }
 
-    function CarregarDetalhes(id: number, faixa: string) {
+    function CarregarDetalhes(id: number, faixa: string, qtd: number) {
         router.push({
             pathname: '/../detalhecaixa',
-            params: { caixa: id, coleta: params.coleta, faixa: faixa },
+            params: { caixa: id, coleta: params.coleta, faixa: faixa, qtd: qtd },
         });
     }
+
     return (
         <View>
             {loadTela ? (
@@ -90,11 +91,10 @@ export default function DetalheColeta() {
         </View>
     );
 
-
     function ItensCaixaPromisse(item: CaixasColeta, i: number) {
         return (
             <View>
-                <TouchableOpacity key={i} disabled={item.conferido} onPress={() => CarregarDetalhes(item.id, item.temperatura)}>
+                <TouchableOpacity key={i} disabled={item.conferido} onPress={() => CarregarDetalhes(item.id, item.temperatura, item.qtd)}>
                     <View key={item.caixa} style={{ flexDirection: 'row', marginBottom: 1 }}>
                         <Image
                             key={i}
@@ -102,11 +102,11 @@ export default function DetalheColeta() {
                             source={caixaImg}>
                         </Image>
                         <Text style={styles.nameTxt}>{item.caixa}-{String(item.qtd).padStart(2, "0")} </Text>
-                        {(item.conferido &&
+                        {(item.conferido &&                            
                             <Image
                                 style={{ width: 20, height: 20, marginLeft: "15%" }}
                                 source={conferidoImg}>
-                            </Image>
+                            </Image>                            
                         )}
                     </View>
                     <Text style={styles.mblTxt}>

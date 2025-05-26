@@ -8,13 +8,15 @@ const AuthContext = createContext<{
   signOut: () => void
   token: string | null;
   login: string | null;
-  isLoading: boolean
+  isLoading: boolean;
+  logou: boolean;
 }>({
   signIn: () => null,
   signOut: () => null,
   token: null,
   login: null,
-  isLoading: true
+  isLoading: true,
+  logou: false,
 });
 
 // Access the context as a hook
@@ -26,6 +28,7 @@ export default function AuthProvider({ children }: { children: ReactNode }): Rea
   const tokenRef = useRef<string | null>(null);
   const loginRef = useRef<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [logou, setLogou] = useState(false);
 
   useEffect(() => {
     (async (): Promise<void> => {
@@ -39,12 +42,13 @@ export default function AuthProvider({ children }: { children: ReactNode }): Rea
   }, []);
 
   const signIn = useCallback(async (token: string, user: string) => {
-    console.log("Gravou token" + token);
     await AsyncStorage.setItem('@token', token);
     await AsyncStorage.setItem('@usu', user);
     tokenRef.current = token;
     loginRef.current = user;
+    console.log("Gravar token" + token);
     router.replace('/');
+    setLogou(true);
   }, []);
 
   const signOut = useCallback(async () => {
@@ -63,7 +67,8 @@ export default function AuthProvider({ children }: { children: ReactNode }): Rea
         signOut,
         token: tokenRef.current || null,
         login: loginRef.current || null,
-        isLoading
+        isLoading,
+        logou,
       }}
     >
       {children}

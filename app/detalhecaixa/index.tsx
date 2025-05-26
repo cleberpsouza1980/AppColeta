@@ -1,8 +1,8 @@
+import PageHeader from '@/components/header';
+import Loading from "@/components/loadingscreen/loading";
+import undefined from "@/components/ui/TabBarBackground";
 import api from "@/res/services/api";
 import conversao from "@/res/services/conversao";
-import PageHeader from "@/src/components/header";
-import Loading from "@/src/components/loadingscreen/loading";
-import undefined from "@/src/components/ui/TabBarBackground";
 import { useIsFocused } from "@react-navigation/core";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ export interface DetalheCaixasColeta {
     codigoCaixa: number,
     logger: string,
     serie: string,
-    qtd: number,
+    //qtd: number,
     idColetaItens: number,
     faixa: string,
 }
@@ -33,6 +33,7 @@ export interface CaixasConferidas {
     user: string | null,
     nuCoordenacao: number,
     idColetaItens: number,
+    faixa: string,
 }
 
 const ONE_SECOND_IN_MS = 1000;
@@ -58,7 +59,7 @@ export default function DetalheCaixa() {
     const isFocused = useIsFocused();
 
 
-    const params = useLocalSearchParams<{ caixa: string, coleta: string, faixa: string }>();
+    const params = useLocalSearchParams<{ caixa: string, coleta: string, faixa: string, qtd: string }>();
 
     useEffect(() => {
         if (isFocused)
@@ -94,7 +95,7 @@ export default function DetalheCaixa() {
             let cx = conversao<DetalheCaixasColeta[]>(response.data);
             setCaixas(cx);
             setCaixaEco(cx[1].descCaixa);
-            setQtdCaixa(cx[1].qtd);
+            setQtdCaixa(Number(params.qtd));
             return;
         }
         else {
@@ -121,13 +122,13 @@ export default function DetalheCaixa() {
             return;
         }
 
-        if (etiqueta.length > 18) {
+        if (etiqueta.length > 25) {
             setEtiqueta(etiqueta.replace("https://www.luftlogistics.com:8801/PortalTransporte/LogerShield/Index/Codigo=", ""));
         }
 
         let IdxEqt = caixas.find(et => {
-            if (et.codigoEanCaixa === etiqueta && et.faixa === params.faixa)
-                return et.serie;
+            if (et.codigoEanCaixa.trim() === etiqueta.trim() && et.faixa.trim() === params.faixa.trim())
+                return et;
         });
 
         if (IdxEqt === undefined) {
@@ -147,15 +148,12 @@ export default function DetalheCaixa() {
                 return et.serie;
         });
 
-        console.log(exSerie);
-
         if (exSerie >= 0) {
             LimparCampos();
             setMessagemError('Etiqueta já lida.');
             Vibration.vibrate(PATTERN);
             return;
         }
-
         VerificaTodosConferidos(IdxEqt);
     }
 
@@ -182,11 +180,12 @@ export default function DetalheCaixa() {
             qtd: 1,
             user: login,
             nuCoordenacao: Number(params.coleta),
-            idColetaItens: caixa.idColetaItens
+            idColetaItens: Number(caixa.idColetaItens),
+            faixa: caixa.faixa
         });
 
         setCaixasConferidas(ArrayCaixas);
-        console.log("ArrayCaixas " + ArrayCaixas.forEach(p => p.serie));
+        //console.log("ArrayCaixas " + ArrayCaixas.forEach(p => p.serie));
     }
 
     const Voltar = () => {
@@ -220,11 +219,8 @@ export default function DetalheCaixa() {
         }
 
         setLoad(true);
-        console.log(JSON.stringify(caixasConferidas));
 
         const res = await api.post("/ColetaEcobox//GravarConferencia", JSON.stringify(caixasConferidas));
-
-        console.log(JSON.stringify(res.data));
 
         response = conversao<resp>(res.data);
 
@@ -274,12 +270,12 @@ export default function DetalheCaixa() {
                             >
                             </TextInput>
                         </View>
-                        <View style={styles.objectSameRow}>
-                            <Text style={styles.critica}> {messagemError}</Text>
-                        </View>
-                        <View>
-                            <Text style={{ marginTop: 10, fontSize: 12, alignItems: 'center', justifyContent: 'center' }}> Lista de Caixas Bipadas:</Text>
-                        </View>
+                        {messagemError &&
+                            <View style={styles.objectSameRow}>
+                                <Text style={styles.critica}> {messagemError}</Text>
+                            </View>
+                        }
+
                         <View>
                             <View style={styles.rowHeader}>
                                 <Text>#Seq</Text>
@@ -289,8 +285,8 @@ export default function DetalheCaixa() {
                             </View>
                         </View>
                         {caixasConferidas.length > 0 ? (
-                            <ScrollView style={styles.textoScroll}>
-                                <View>
+                            <View>
+                                <ScrollView style={styles.textoScroll}>
                                     {
                                         caixasConferidas.map((x: CaixasConferidas) => {
                                             return (
@@ -300,8 +296,8 @@ export default function DetalheCaixa() {
                                             )
                                         })
                                     };
-                                </View>
-                            </ScrollView>
+                                </ScrollView>
+                            </View>
                         ) : null}
                         <View style={styles.styleButton}>
                             <Button title="Voltar" color="black" onPress={Voltar} />
@@ -318,28 +314,26 @@ export default function DetalheCaixa() {
 
     function ItensCaixasPromisse(item: CaixasConferidas) {
         return (
-            <View>
+            (item &&
                 <View style={styles.rowGrid}>
                     <Text>{item.seq}</Text>
                     <Text>{item.serie}</Text>
                     <Text>{item.modelo}</Text>
-                    <TouchableOpacity key={item.serie}>
-                        <View>
-                            <CheckBox style={styles.pic}
-                                checkedIcon="dot-trash-o"
-                                uncheckedIcon="trash-o"
-                                onPress={() => toggleChecked(item.serie)}
-                            />
-                        </View>
+                    <TouchableOpacity key={item.seq}>
+                        <CheckBox style={styles.pic}
+                            checkedIcon="dot-trash-o"
+                            uncheckedIcon="trash-o"
+                            onPress={() => toggleChecked(item.serie)}
+                        />
                     </TouchableOpacity>
                 </View>
-            </View>
-        );
+            ));
     }
 
-    function toggleChecked(nota: string) {
+    function toggleChecked(serie: string) {
+        console.log("toggleChecked");
         let arr = caixasConferidas.filter(function (item) {
-            return item.serie !== nota
+            return item.serie !== serie
         })
         setTotalLido(arr.length);
         setCaixasConferidas(arr);
@@ -376,7 +370,7 @@ const styles = StyleSheet.create({
         padding: -5,
         width: '100%',
         borderRadius: 5,
-        marginTop: 1,
+        marginTop: -20,
     },
     nameTxt: {
         marginTop: -60,
@@ -426,20 +420,22 @@ const styles = StyleSheet.create({
     },
     pic: {
         borderRadius: 15,
-        width: 30,
-        height: 30,
+        width: 20,
+        height: 20,
+        marginTop: -20,
     },
     rowGrid: {
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
+        alignContent: 'center',
         borderColor: '#dcdcdc',
         justifyContent: 'space-between',
-        marginTop: -10,
+        marginTop: 5,
         marginLeft: 25,
+        height: 52,
+        fontStyle: 'normal',
     },
     rowHeader: {
-        flex: 1,
         flexDirection: 'row',
         borderColor: '#707b7c',
         backgroundColor: '#ccd1d1',
@@ -448,7 +444,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginTop: -20,
+        marginTop: 5,
+        marginBottom: 20,
         width: '100%',
     }
 });

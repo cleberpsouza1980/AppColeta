@@ -5,6 +5,7 @@ import { ReactNode, useState } from "react";
 import { ActivityIndicator, Alert, Button, Image, StyleSheet, Text, TextInput, View } from "react-native";
 import { useAuthSession } from "./ctx";
 
+
 interface LoginResult {
     token: string,
     menus: Menu[],
@@ -75,19 +76,19 @@ export default function Login(): ReactNode {
             setSenha('');
             setLoad(false);
             const resp = conversao<LoginResult>(response.data);
-            //await AsyncStorage.setItem('@token', String(resp.token));
-            // await AsyncStorage.setItem('@usu', usuario);
-            // router.replace('/');
-            //console.log(resp.token);
+
             if (resp.token.length > 10) {
-                login(String(resp.token));
+                console.log("Antes Router");
+
+                await login(String(resp.token), usuario);
+                console.log("Router");
             }
         }
     };
 
-    const login = (tok: string): void => {
+    const login = async (tok: string, usu: string): Promise<void> => {
         const t: string = String(tok);
-        const l: string = String(usuario);
+        const l: string = String(usu);
         signIn(t, l);
     };
 
@@ -147,6 +148,7 @@ const styles = StyleSheet.create({
         width: "80%",
         borderWidth: 1,
         borderColor: "#000",
+        backgroundColor:"#f8f9f9",
         padding: 10,
         margin: 10,
         borderRadius: 4,

@@ -5,7 +5,7 @@ import _styles from './styles';
 
 //import backIcon from '../../assets/images/icons/back.png';
 //let backIcon = require('../../../assets/images/icons/back2.png');
-let logoImg = require('../../../assets/images/icon2.png');
+let logoImg = require('@/assets/images/icon2.png');
 let imgUser = require('@/assets/usericon.png');
 
 
