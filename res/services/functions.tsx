@@ -1,4 +1,4 @@
-export const VersaoApp = 1.04;
+export const VersaoApp = 2.00;
 
 export function isNumber(n: string) {
     return !isNaN(parseFloat(n));

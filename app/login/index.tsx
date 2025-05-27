@@ -49,9 +49,7 @@ export default function Login(): ReactNode {
 
         setLoad(true);
         const response = await api.post('/Login', JSON.stringify(data));
-        // console.log("Request " + JSON.stringify(data));
-        // console.log("Respos " + JSON.stringify(response.data));
-
+        
         if (response.data === "401" || response.duration === 403 || response.status === 401
             || response.data == null) {
             setMensagem("Login ou senha inválida.");
@@ -77,11 +75,8 @@ export default function Login(): ReactNode {
             setLoad(false);
             const resp = conversao<LoginResult>(response.data);
 
-            if (resp.token.length > 10) {
-                console.log("Antes Router");
-
-                await login(String(resp.token), usuario);
-                console.log("Router");
+            if (resp.token.length > 10) {                
+                await login(String(resp.token), usuario);                
             }
         }
     };

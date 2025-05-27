@@ -113,7 +113,6 @@ export default function DetalheCaixa() {
         if (etiqueta.length === 0) {
             return;
         }
-
         setMessagemError('');
 
         if (etiqueta.length < 6) {
@@ -122,10 +121,7 @@ export default function DetalheCaixa() {
             return;
         }
 
-        if (etiqueta.length > 25) {
-            setEtiqueta(etiqueta.replace("https://www.luftlogistics.com:8801/PortalTransporte/LogerShield/Index/Codigo=", ""));
-        }
-
+        console.log(etiqueta);
         let IdxEqt = caixas.find(et => {
             if (et.codigoEanCaixa.trim() === etiqueta.trim() && et.faixa.trim() === params.faixa.trim())
                 return et;
@@ -255,89 +251,92 @@ export default function DetalheCaixa() {
                                 allowFontScaling={false}
                                 placeholder='Etiqueta Caixa'
                                 placeholderTextColor='#bbb'
-                                onChangeText={(text) => {
-                                    setEtiqueta(text);
+                                onChangeText={(text) => {                                    
+                                    setEtiqueta(text.trim().length > 20 ?   
+                                    text.replace("https://www.luftlogistics.com:8801/PortalTransporte/LogerShield/Index/Codigo=", "").trim()
+                                  : text.trim());
                                 }}
-                                onSubmitEditing={(event) => {
-                                    event.persist();
-                                    KeyPressPromisse();
-                                }}
-                                autoFocus={true}
-                                onBlur={() => {
-                                    refInput.current?.focus();
-                                }}
-                                maxLength={20}
+                            onSubmitEditing={(event) => {
+                                event.persist();
+                                KeyPressPromisse();
+                            }}
+                            autoFocus={true}
+                            onBlur={() => {
+                                refInput.current?.focus();
+                            }}
+                            maxLength={120}
                             >
-                            </TextInput>
-                        </View>
-                        {messagemError &&
-                            <View style={styles.objectSameRow}>
-                                <Text style={styles.critica}> {messagemError}</Text>
-                            </View>
-                        }
-
-                        <View>
-                            <View style={styles.rowHeader}>
-                                <Text>#Seq</Text>
-                                <Text>Série</Text>
-                                <Text>Modelo</Text>
-                                <Text>Excluir?</Text>
-                            </View>
-                        </View>
-                        {caixasConferidas.length > 0 ? (
-                            <View>
-                                <ScrollView style={styles.textoScroll}>
-                                    {
-                                        caixasConferidas.map((x: CaixasConferidas) => {
-                                            return (
-                                                <View key={x.seq}>
-                                                    {ItensCaixasPromisse(x)}
-                                                </View>
-                                            )
-                                        })
-                                    };
-                                </ScrollView>
-                            </View>
-                        ) : null}
-                        <View style={styles.styleButton}>
-                            <Button title="Voltar" color="black" onPress={Voltar} />
-                            {load ? (
-                                <ActivityIndicator size={24} color='#191970' />
-                            ) : (
-                                <Button title="Registrar" color="#191970" onPress={ConfirmarPassagem} />
-                            )}
-                        </View>
+                        </TextInput>
                     </View>
+                        {messagemError &&
+                <View style={styles.objectSameRow}>
+                    <Text style={styles.critica}> {messagemError}</Text>
+                </View>
+            }
+
+            <View>
+                <View style={styles.rowHeader}>
+                    <Text>#Seq</Text>
+                    <Text>Série</Text>
+                    <Text>Modelo</Text>
+                    <Text>Excluir?</Text>
+                </View>
+            </View>
+            {caixasConferidas.length > 0 ? (
+                <View>
+                    <ScrollView style={styles.textoScroll}>
+                        {
+                            caixasConferidas.map((x: CaixasConferidas) => {
+                                return (
+                                    <View key={x.seq}>
+                                        {ItensCaixasPromisse(x)}
+                                    </View>
+                                )
+                            })
+                        };
+                    </ScrollView>
+                </View>
+            ) : null}
+            <View style={styles.styleButton}>
+                <Button title="Voltar" color="black" onPress={Voltar} />
+                {load ? (
+                    <ActivityIndicator size={24} color='#191970' />
+                ) : (
+                    <Button title="Registrar" color="#191970" onPress={ConfirmarPassagem} />
                 )}
+            </View>
         </View>
+    )
+}
+        </View >
     );
 
-    function ItensCaixasPromisse(item: CaixasConferidas) {
-        return (
-            (item &&
-                <View style={styles.rowGrid}>
-                    <Text>{item.seq}</Text>
-                    <Text>{item.serie}</Text>
-                    <Text>{item.modelo}</Text>
-                    <TouchableOpacity key={item.seq}>
-                        <CheckBox style={styles.pic}
-                            checkedIcon="dot-trash-o"
-                            uncheckedIcon="trash-o"
-                            onPress={() => toggleChecked(item.serie)}
-                        />
-                    </TouchableOpacity>
-                </View>
-            ));
-    }
+function ItensCaixasPromisse(item: CaixasConferidas) {
+    return (
+        (item &&
+            <View style={styles.rowGrid}>
+                <Text>{item.seq}</Text>
+                <Text>{item.serie}</Text>
+                <Text>{item.modelo}</Text>
+                <TouchableOpacity key={item.seq}>
+                    <CheckBox style={styles.pic}
+                        checkedIcon="dot-trash-o"
+                        uncheckedIcon="trash-o"
+                        onPress={() => toggleChecked(item.serie)}
+                    />
+                </TouchableOpacity>
+            </View>
+        ));
+}
 
-    function toggleChecked(serie: string) {
-        console.log("toggleChecked");
-        let arr = caixasConferidas.filter(function (item) {
-            return item.serie !== serie
-        })
-        setTotalLido(arr.length);
-        setCaixasConferidas(arr);
-    }
+function toggleChecked(serie: string) {
+    console.log("toggleChecked");
+    let arr = caixasConferidas.filter(function (item) {
+        return item.serie !== serie
+    })
+    setTotalLido(arr.length);
+    setCaixasConferidas(arr);
+}
 }
 
 const styles = StyleSheet.create({
@@ -345,7 +344,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#aeb6bf',
         marginVertical: 20,
-        marginTop: -470,
+        marginTop: '-132%',
         padding: -15,
         width: '100%',
         height: '100%',
@@ -355,7 +354,7 @@ const styles = StyleSheet.create({
     },
     textMensagemPrincipal: {
         backgroundColor: '#e28f46',
-        marginTop: -60,
+        marginTop: '-15%',
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
