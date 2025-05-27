@@ -4,9 +4,9 @@ import { create } from 'apisauce';
 
 const api = create({
     //baseURL: 'http://localhost:9000/Api',
-    baseURL: 'http://172.16.200.82//APILufthml//Api/',    
+    //baseURL: 'http://172.16.200.82//APILufthml//Api/',    
     //baseURL: 'https://www.luftlogistics.com:8801//APILuft//Api/',    
-    //baseURL: 'https://www.luftlogistics.com:8805//APILufthml//Api/',    
+    baseURL: 'https://www.luftlogistics.com:8805//APILufthml//Api/',    
     headers: {
         Accept: 'application/json; charset=utf-8'
     },

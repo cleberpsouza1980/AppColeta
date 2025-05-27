@@ -109,10 +109,12 @@ export default function DetalheCaixa() {
     };
 
     function KeyPressPromisse() {
+        let NovaEtiqueta : string;
 
         if (etiqueta.length === 0) {
             return;
         }
+
         setMessagemError('');
 
         if (etiqueta.length < 6) {
@@ -120,16 +122,21 @@ export default function DetalheCaixa() {
             Vibration.vibrate(PATTERN);
             return;
         }
+        NovaEtiqueta = etiqueta;
 
-        console.log(etiqueta);
-        let IdxEqt = caixas.find(et => {
-            if (et.codigoEanCaixa.trim() === etiqueta.trim() && et.faixa.trim() === params.faixa.trim())
+        if(NovaEtiqueta.length > 79)
+            NovaEtiqueta = NovaEtiqueta.replace('https://www.luftlogistics.com:8801/PortalTransporte/LogerShield/Index/Codigo=','');
+
+        LimparCampos();
+
+        let ObjEqt = caixas.find(et => {
+            if (et.codigoEanCaixa.trim() === NovaEtiqueta.trim() && et.faixa.trim() === params.faixa.trim())
                 return et;
         });
 
-        if (IdxEqt === undefined) {
+        if (ObjEqt === undefined) {
             LimparCampos();
-            setMessagemError('Caixa não localizada.');
+            setMessagemError('Caixa não localizada. ' + NovaEtiqueta);
             Vibration.vibrate(PATTERN);
             return;
         }
@@ -140,17 +147,17 @@ export default function DetalheCaixa() {
         }
 
         let exSerie = caixasConferidas.findIndex(et => {
-            if (et.serie === IdxEqt.serie)
+            if (et.serie === ObjEqt.serie)
                 return et.serie;
         });
 
         if (exSerie >= 0) {
             LimparCampos();
-            setMessagemError('Etiqueta já lida.');
+            setMessagemError('Etiqueta já lida. ' + NovaEtiqueta);
             Vibration.vibrate(PATTERN);
             return;
         }
-        VerificaTodosConferidos(IdxEqt);
+        VerificaTodosConferidos(ObjEqt);
     }
 
     async function VerificaTodosConferidos(caixa: DetalheCaixasColeta) {
@@ -251,92 +258,90 @@ export default function DetalheCaixa() {
                                 allowFontScaling={false}
                                 placeholder='Etiqueta Caixa'
                                 placeholderTextColor='#bbb'
-                                onChangeText={(text) => {                                    
-                                    setEtiqueta(text.trim().length > 20 ?   
-                                    text.replace("https://www.luftlogistics.com:8801/PortalTransporte/LogerShield/Index/Codigo=", "").trim()
-                                  : text.trim());
+                                onChangeText={(text) => {
+                                    setEtiqueta(text.trim());
                                 }}
-                            onSubmitEditing={(event) => {
-                                event.persist();
-                                KeyPressPromisse();
-                            }}
-                            autoFocus={true}
-                            onBlur={() => {
-                                refInput.current?.focus();
-                            }}
-                            maxLength={120}
+                                onSubmitEditing={(event) => {
+                                    event.persist();
+                                    KeyPressPromisse();
+                                }}
+                                autoFocus={true}
+                                onBlur={() => {
+                                    refInput.current?.focus();
+                                }}
+                                maxLength={120}
                             >
-                        </TextInput>
-                    </View>
+                            </TextInput>
+                        </View>
                         {messagemError &&
-                <View style={styles.objectSameRow}>
-                    <Text style={styles.critica}> {messagemError}</Text>
-                </View>
-            }
+                            <View style={styles.objectSameRow}>
+                                <Text style={styles.critica}> {messagemError}</Text>
+                            </View>
+                        }
 
-            <View>
-                <View style={styles.rowHeader}>
-                    <Text>#Seq</Text>
-                    <Text>Série</Text>
-                    <Text>Modelo</Text>
-                    <Text>Excluir?</Text>
-                </View>
-            </View>
-            {caixasConferidas.length > 0 ? (
-                <View>
-                    <ScrollView style={styles.textoScroll}>
-                        {
-                            caixasConferidas.map((x: CaixasConferidas) => {
-                                return (
-                                    <View key={x.seq}>
-                                        {ItensCaixasPromisse(x)}
-                                    </View>
-                                )
-                            })
-                        };
-                    </ScrollView>
-                </View>
-            ) : null}
-            <View style={styles.styleButton}>
-                <Button title="Voltar" color="black" onPress={Voltar} />
-                {load ? (
-                    <ActivityIndicator size={24} color='#191970' />
-                ) : (
-                    <Button title="Registrar" color="#191970" onPress={ConfirmarPassagem} />
-                )}
-            </View>
-        </View>
-    )
-}
+                        <View>
+                            <View style={styles.rowHeader}>
+                                <Text>#Seq</Text>
+                                <Text>Série</Text>
+                                <Text>Modelo</Text>
+                                <Text>Excluir?</Text>
+                            </View>
+                        </View>
+                        {caixasConferidas.length > 0 ? (
+                            <View>
+                                <ScrollView style={styles.textoScroll}>
+                                    {
+                                        caixasConferidas.map((x: CaixasConferidas) => {
+                                            return (
+                                                <View key={x.seq}>
+                                                    {ItensCaixasPromisse(x)}
+                                                </View>
+                                            )
+                                        })
+                                    };
+                                </ScrollView>
+                            </View>
+                        ) : null}
+                        <View style={styles.styleButton}>
+                            <Button title="Voltar" color="black" onPress={Voltar} />
+                            {load ? (
+                                <ActivityIndicator size={24} color='#191970' />
+                            ) : (
+                                <Button title="Registrar" color="#191970" onPress={ConfirmarPassagem} />
+                            )}
+                        </View>
+                    </View>
+                )
+            }
         </View >
     );
 
-function ItensCaixasPromisse(item: CaixasConferidas) {
-    return (
-        (item &&
-            <View style={styles.rowGrid}>
-                <Text>{item.seq}</Text>
-                <Text>{item.serie}</Text>
-                <Text>{item.modelo}</Text>
-                <TouchableOpacity key={item.seq}>
-                    <CheckBox style={styles.pic}
-                        checkedIcon="dot-trash-o"
-                        uncheckedIcon="trash-o"
-                        onPress={() => toggleChecked(item.serie)}
-                    />
-                </TouchableOpacity>
-            </View>
-        ));
-}
+    function ItensCaixasPromisse(item: CaixasConferidas) {
+        return (
+            (item &&
+                <View style={styles.rowGrid}>
+                    <Text>{item.seq}</Text>
+                    <Text>{item.serie}</Text>
+                    <Text>{item.modelo}</Text>
+                    <TouchableOpacity key={item.seq}>
+                        <CheckBox style={styles.pic}
+                            checkedIcon="dot-trash-o"
+                            uncheckedIcon="trash-o"
+                            onPress={() => toggleChecked(item.serie)}
+                        />
+                    </TouchableOpacity>
+                </View>
+            ));
+    }
 
-function toggleChecked(serie: string) {
-    console.log("toggleChecked");
-    let arr = caixasConferidas.filter(function (item) {
-        return item.serie !== serie
-    })
-    setTotalLido(arr.length);
-    setCaixasConferidas(arr);
-}
+    function toggleChecked(serie: string) {
+        console.log("toggleChecked");
+        let arr = caixasConferidas.filter(function (item) {
+            return item.serie !== serie
+        })
+        setTotalLido(arr.length);
+        setCaixasConferidas(arr);
+    }
 }
 
 const styles = StyleSheet.create({
