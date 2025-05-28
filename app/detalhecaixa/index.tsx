@@ -109,7 +109,7 @@ export default function DetalheCaixa() {
     };
 
     function KeyPressPromisse() {
-        let NovaEtiqueta : string;
+        let NovaEtiqueta: string;
 
         if (etiqueta.length === 0) {
             return;
@@ -121,19 +121,20 @@ export default function DetalheCaixa() {
             LimparCampos();
             Vibration.vibrate(PATTERN);
             return;
+        }                
+
+        if (etiqueta.length > 77) {            
+            NovaEtiqueta = etiqueta.substring(77, etiqueta.length);            
         }
-        NovaEtiqueta = etiqueta;
-
-        if(NovaEtiqueta.length > 79)
-            NovaEtiqueta = NovaEtiqueta.replace('https://www.luftlogistics.com:8801/PortalTransporte/LogerShield/Index/Codigo=','');
-
-        LimparCampos();
+        else
+            NovaEtiqueta = etiqueta;
+        
 
         let ObjEqt = caixas.find(et => {
             if (et.codigoEanCaixa.trim() === NovaEtiqueta.trim() && et.faixa.trim() === params.faixa.trim())
                 return et;
         });
-
+        console.log("Entrou");
         if (ObjEqt === undefined) {
             LimparCampos();
             setMessagemError('Caixa não localizada. ' + NovaEtiqueta);
@@ -157,6 +158,7 @@ export default function DetalheCaixa() {
             Vibration.vibrate(PATTERN);
             return;
         }
+        LimparCampos();
         VerificaTodosConferidos(ObjEqt);
     }
 
@@ -270,8 +272,7 @@ export default function DetalheCaixa() {
                                     refInput.current?.focus();
                                 }}
                                 maxLength={120}
-                            >
-                            </TextInput>
+                            />
                         </View>
                         {messagemError &&
                             <View style={styles.objectSameRow}>

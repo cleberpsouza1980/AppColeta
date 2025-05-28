@@ -1,27 +1,26 @@
 import { Dimensions, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 10,
+    container: {        
         backgroundColor: '#aeb6bf',
         borderBottomLeftRadius:10,
         borderBottomRightRadius:10,
-        marginTop:-15,
+        marginTop:5,
         borderRadius: 10,
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height - 10,
+        height: Dimensions.get('window').height - 20,
     },
     topBar: {
         flexDirection: 'row',
         alignItems: 'flex-end',        
         marginTop: 10,
-        marginLeft:"95%",
+        marginLeft:"80%",
     },
     imgUser: {
         flexDirection: 'row',
         alignItems: 'flex-end',        
         marginTop: -10,
-        marginLeft:-80,
+        marginLeft:-70,
     },
     title: {
         color: '#000033',
