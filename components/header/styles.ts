@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',        
         marginTop: -10,
-        marginLeft:-70,
+        marginLeft:-100,
     },
     title: {
         color: '#000033',

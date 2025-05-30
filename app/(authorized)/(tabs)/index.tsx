@@ -42,8 +42,8 @@ export default function AcessarColetas() {
         pathname: '/../SemInternet',
       });
     }
-
-    if (response.data === "401") {
+    
+    if (response.status === 401) {
       router.push({
         pathname: '/../login',
       });
